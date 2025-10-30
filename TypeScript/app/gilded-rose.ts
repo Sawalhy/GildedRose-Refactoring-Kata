@@ -1,6 +1,6 @@
 const AGED_BRIE = "Aged Brie"
 const SULFURAS = "Sulfuras, Hand of Ragnaros"
-const BCKSTSPASS = 'Backstage passes to a TAFKAL80ETC concert'
+const BACKSTAGE_PASS = 'Backstage passes to a TAFKAL80ETC concert'
 
 
 export class Item {
@@ -37,40 +37,36 @@ export class GildedRose {
 
 		for (let i = 0; i < this.items.length; i++) {
 			const item = this.items[i]
+			//If Sulfuras -> Ignore
 			if (item.name === SULFURAS) {
 				continue;
 			}
-
-			if (item.name != AGED_BRIE && item.name != BCKSTSPASS) {
-				decreaseItemQuality(item)
-			} else {
-				if (item.quality < 50) {
-					item.quality = item.quality + 1
-					if (item.name == BCKSTSPASS) {
-						if (item.sellIn < 11) {
-							increaseItemQuality(item)
-						}
-						if (item.sellIn < 6) {
-							increaseItemQuality(item)
-						}
-					}
-				}
-			}
-
 			item.sellIn = item.sellIn - 1;
-
-			if (item.sellIn < 0) {
-				switch (item.name) {
-					case AGED_BRIE:
+			switch (item.name) {
+				case AGED_BRIE:
+					increaseItemQuality(item)
+					if (item.sellIn < 0)
 						increaseItemQuality(item);
-						break;
-					case BCKSTSPASS:
+					break;
+				case BACKSTAGE_PASS:
+					increaseItemQuality(item)
+					if (item.sellIn < 0) {
 						item.quality = 0;
 						break;
-					default:
+					}
+					if (item.sellIn < 10) {
+						increaseItemQuality(item);
+					}
+					if (item.sellIn < 5) {
+						increaseItemQuality(item);
+					}
+					break;
+				default:
+					if (item.sellIn < 0)
 						decreaseItemQuality(item);
-				}
+					decreaseItemQuality(item);
 			}
+
 		}
 
 		return this.items;
