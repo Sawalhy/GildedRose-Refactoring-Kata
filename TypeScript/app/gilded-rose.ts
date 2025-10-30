@@ -13,6 +13,47 @@ export class Item {
 		this.sellIn = sellIn;
 		this.quality = quality;
 	}
+	increaseItemQuality() {
+		if (this.quality < 50) {
+			this.quality = this.quality + 1
+		}
+	}
+	decreaseItemQuality() {
+		if (this.quality > 0) {
+			this.quality = this.quality - 1
+		}
+	}
+
+	update (){
+		if (this.name === SULFURAS) {
+			return;
+		}
+		this.sellIn = this.sellIn - 1;
+		switch (this.name) {
+			case AGED_BRIE:
+				this.increaseItemQuality()
+				if (this.sellIn < 0)
+					this.increaseItemQuality();
+				break;
+			case BACKSTAGE_PASS:
+				this.increaseItemQuality()
+				if (this.sellIn < 0) {
+					this.quality = 0;
+					break;
+				}
+				if (this.sellIn < 10) {
+					this.increaseItemQuality();
+				}
+				if (this.sellIn < 5) {
+					this.increaseItemQuality();
+				}
+				break;
+			default:
+				if (this.sellIn < 0)
+					this.decreaseItemQuality();
+				this.decreaseItemQuality();
+		}
+	}
 }
 
 export class GildedRose {
@@ -23,50 +64,9 @@ export class GildedRose {
 	}
 
 	updateQuality() {
-
-		function increaseItemQuality(item: Item) {
-			if (item.quality < 50) {
-				item.quality = item.quality + 1
-			}
-		}
-		function decreaseItemQuality(item: Item) {
-			if (item.quality > 0) {
-				item.quality = item.quality - 1
-			}
-		}
-
 		for (let i = 0; i < this.items.length; i++) {
 			const item = this.items[i]
-			//If Sulfuras -> Ignore
-			if (item.name === SULFURAS) {
-				continue;
-			}
-			item.sellIn = item.sellIn - 1;
-			switch (item.name) {
-				case AGED_BRIE:
-					increaseItemQuality(item)
-					if (item.sellIn < 0)
-						increaseItemQuality(item);
-					break;
-				case BACKSTAGE_PASS:
-					increaseItemQuality(item)
-					if (item.sellIn < 0) {
-						item.quality = 0;
-						break;
-					}
-					if (item.sellIn < 10) {
-						increaseItemQuality(item);
-					}
-					if (item.sellIn < 5) {
-						increaseItemQuality(item);
-					}
-					break;
-				default:
-					if (item.sellIn < 0)
-						decreaseItemQuality(item);
-					decreaseItemQuality(item);
-			}
-
+			item.update()
 		}
 
 		return this.items;
